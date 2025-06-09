@@ -1,6 +1,8 @@
 import unittest
-from RPS_game import play, mrugesh, abbey, quincy, kris
-from RPS import player
+from RPS import Player
+from RPS_game import play, quincy, mrugesh, abbey, kris
+
+player = Player()  # Instancia de la clase Player
 
 
 class UnitTests(unittest.TestCase):

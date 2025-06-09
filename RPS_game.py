@@ -1,7 +1,4 @@
-# DO NOT MODIFY THIS FILE
-
 import random
-
 
 def play(player1, player2, num_games, verbose=False):
     p1_prev_play = ""
@@ -15,19 +12,30 @@ def play(player1, player2, num_games, verbose=False):
         if p1_play == p2_play:
             results["tie"] += 1
             winner = "Tie."
-        elif (p1_play == "P" and p2_play == "R") or (
-                p1_play == "R" and p2_play == "S") or (p1_play == "S"
-                                                       and p2_play == "P"):
+            result_p1 = 'tie'
+            result_p2 = 'tie'
+        elif (p1_play == "P" and p2_play == "R") or \
+             (p1_play == "R" and p2_play == "S") or \
+             (p1_play == "S" and p2_play == "P"):
             results["p1"] += 1
             winner = "Player 1 wins."
-        elif p2_play == "P" and p1_play == "R" or p2_play == "R" and p1_play == "S" or p2_play == "S" and p1_play == "P":
+            result_p1 = 'win'
+            result_p2 = 'loss'
+        else:
             results["p2"] += 1
             winner = "Player 2 wins."
+            result_p1 = 'loss'
+            result_p2 = 'win'
 
         if verbose:
             print("Player 1:", p1_play, "| Player 2:", p2_play)
             print(winner)
             print()
+
+        if hasattr(player1, 'learn'):
+            player1.learn(p1_play, p2_play, result_p1)
+        if hasattr(player2, 'learn'):
+            player2.learn(p2_play, p1_play, result_p2)
 
         p1_prev_play = p1_play
         p2_prev_play = p2_play
@@ -42,11 +50,10 @@ def play(player1, player2, num_games, verbose=False):
     print("Final results:", results)
     print(f"Player 1 win rate: {win_rate}%")
 
-    return (win_rate)
+    return win_rate
 
 
 def quincy(prev_play, counter=[0]):
-
     counter[0] += 1
     choices = ["R", "R", "P", "P", "S"]
     return choices[counter[0] % len(choices)]
@@ -56,10 +63,8 @@ def mrugesh(prev_opponent_play, opponent_history=[]):
     opponent_history.append(prev_opponent_play)
     last_ten = opponent_history[-10:]
     most_frequent = max(set(last_ten), key=last_ten.count)
-
     if most_frequent == '':
         most_frequent = "S"
-
     ideal_response = {'P': 'S', 'R': 'P', 'S': 'R'}
     return ideal_response[most_frequent]
 
@@ -88,7 +93,6 @@ def abbey(prev_opponent_play,
     if not prev_opponent_play:
         prev_opponent_play = 'R'
     opponent_history.append(prev_opponent_play)
-
     last_two = "".join(opponent_history[-2:])
     if len(last_two) == 2:
         play_order[0][last_two] += 1
